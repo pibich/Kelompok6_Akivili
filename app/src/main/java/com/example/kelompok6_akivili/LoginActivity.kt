@@ -14,6 +14,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import android.widget.Toast
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -46,20 +48,20 @@ class LoginActivity : AppCompatActivity() {
 
             if (email.isEmpty()) {
                 generalErrorTextView.visibility = View.VISIBLE
-                generalErrorTextView.text = "*Email harus diisi"
+                generalErrorTextView.text = "*Email must be filled"
                 return@setOnClickListener
             }
 
             if (password.isEmpty()) {
                 generalErrorTextView.visibility = View.VISIBLE
-                generalErrorTextView.text = "*Password harus diisi"
+                generalErrorTextView.text = "*Password must be filled"
                 return@setOnClickListener
             }
 
             loginUser(email, password)
         }
 
-        val registerFullText = "Belum punya akun? Register di sini"
+        val registerFullText = "Don't have an account? Register here"
         val registerSpannable = SpannableString(registerFullText)
 
         val registerClickableSpan = object : ClickableSpan() {
@@ -78,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
         registerTextView.text = registerSpannable
         registerTextView.movementMethod = android.text.method.LinkMovementMethod.getInstance()
 
-        val forgotPasswordFullText = "Lupa Password?"
+        val forgotPasswordFullText = "Forgot Password?"
         val forgotPasswordSpannable = SpannableString(forgotPasswordFullText)
 
         val forgotPasswordClickableSpan = object : ClickableSpan() {
@@ -102,22 +104,35 @@ class LoginActivity : AppCompatActivity() {
 
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithEmail:success")
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    val user = auth.currentUser
+
+                    if (user?.isEmailVerified == true) {
+                        Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    } else {
+                        user?.let { sendEmailVerification(it) }
+                        generalErrorTextView.visibility = View.VISIBLE
+                        generalErrorTextView.text = "*Email not verified. Please verify your email."
+                    }
                 } else {
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
                     Log.e(TAG, "Error: ${task.exception?.message}")
 
                     generalErrorTextView.visibility = View.VISIBLE
-                    generalErrorTextView.text = "*Login gagal. Periksa email dan password."
+                    generalErrorTextView.text = "*Login failed. Check your email or password."
+                }
+            }
+    }
 
-                    if (task.exception?.message?.contains("no user record") == true) {
-                        generalErrorTextView.text = "*Email tidak ditemukan"
-                    }
-
-                    if (task.exception?.message?.contains("wrong password") == true) {
-                        generalErrorTextView.text = "*Password salah"
-                    }
+    private fun sendEmailVerification(user: FirebaseUser) {
+        user.sendEmailVerification()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Verification email successfully sent to ${user.email}.", Toast.LENGTH_LONG).show()
+                } else {
+                    Log.e(TAG, "sendEmailVerification", task.exception)
+                    Toast.makeText(this, "Failed to send verification email.", Toast.LENGTH_SHORT).show()
                 }
             }
     }

@@ -3,31 +3,116 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="15dp"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_akivili"
+        android:layout_marginTop="-70dp"/>
+
+    <TextView
+        android:id="@+id/registerMemberTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Member Registration"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/instructionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create a new account, and make sure to remember it."
+        android:textSize="14sp"
+        android:textStyle="normal"
+        android:textColor="@color/black"
+        android:layout_marginBottom="20dp"/>
 
     <EditText
         android:id="@+id/nameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name" />
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:layout_marginBottom="10dp"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:textColor="@color/black" />
 
     <EditText
         android:id="@+id/emailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="10dp"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/emailErrorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="*Invalid email, please use another email"
+        android:textColor="@color/redlink"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp" />
 
     <EditText
         android:id="@+id/passwordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:layout_marginBottom="10dp"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:textColor="@color/black"/>
+
+    <TextView
+        android:id="@+id/passwordErrorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="*Password must be at least 8 characters and contain letters and numbers"
+        android:textColor="@color/redlink"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/generalErrorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/redlink"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/registerButton"
-        android:layout_width="match_parent"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:text="REGISTER"
+        android:textStyle="bold"
+        android:backgroundTint="@color/orange"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/loginTextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register" />
+        android:text="Already have an account? Login here"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="130dp"/>
+
 </LinearLayout>
