@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "321321841156",
+    "project_id": "kelompok6-akivili",
+    "storage_bucket": "kelompok6-akivili.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321321841156:android:bcb0f79c00fb01d71b3b51",
+        "android_client_info": {
+          "package_name": "com.example.kelompok6_akivili"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321321841156-14la572s9tr55eeikrou30kpqvh4451i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kelompok6_akivili",
+            "certificate_hash": "05a527421a8e5549d73e7f3cddc31ae43c0c8fa6"
+          }
+        },
+        {
+          "client_id": "321321841156-hp5t0mmn0i90ntlcl37nuqaoc8qgtpol.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCDp7ydCuMAJhQxDheILuFAOWSFn7npk8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321321841156-hp5t0mmn0i90ntlcl37nuqaoc8qgtpol.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
