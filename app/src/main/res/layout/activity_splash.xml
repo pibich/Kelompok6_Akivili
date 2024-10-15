@@ -10,6 +10,6 @@ android:background="@color/orange">
     android:id="@+id/logo"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@drawable/logo_akivili" /> <!-- Ganti dengan logo aplikasi -->
+    android:src="@drawable/logo_akivili" />
 
 </LinearLayout>

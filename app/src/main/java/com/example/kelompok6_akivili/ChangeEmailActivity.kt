@@ -11,36 +11,36 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ResetPasswordActivity : AppCompatActivity() {
+class ChangeEmailActivity : AppCompatActivity() {
 
-    private lateinit var emailEditText: EditText
-    private lateinit var resetButton: Button
+    private lateinit var newEmailEditText: EditText
+    private lateinit var changeEmailButton: Button
     private lateinit var generalErrorTextView: TextView
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reset_password)
+        setContentView(R.layout.activity_change_email)
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
-        emailEditText = findViewById(R.id.emailEditText)
-        resetButton = findViewById(R.id.resetButton)
+        newEmailEditText = findViewById(R.id.newEmailEditText)
+        changeEmailButton = findViewById(R.id.changeEmailButton)
         generalErrorTextView = findViewById(R.id.generalErrorTextView)
 
-        resetButton.setOnClickListener {
-            val email = emailEditText.text.toString().trim()
+        changeEmailButton.setOnClickListener {
+            val newEmail = newEmailEditText.text.toString().trim()
 
             generalErrorTextView.visibility = View.GONE
 
-            if (!isEmailValid(email)) {
+            if (!isEmailValid(newEmail)) {
                 generalErrorTextView.visibility = View.VISIBLE
                 generalErrorTextView.text = "*Invalid email"
                 return@setOnClickListener
             }
 
-            checkEmailExists(email)
+            checkEmailExists(newEmail)
         }
     }
 
@@ -55,10 +55,10 @@ class ResetPasswordActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     if (task.result != null && !task.result.isEmpty) {
-                        sendResetPasswordEmail(email)
-                    } else {
                         generalErrorTextView.visibility = View.VISIBLE
-                        generalErrorTextView.text = "*Email not found"
+                        generalErrorTextView.text = "*Email already exists"
+                    } else {
+                        updateEmail(email)
                     }
                 } else {
                     Log.w(TAG, "checkEmailExists:failure", task.exception)
@@ -68,21 +68,31 @@ class ResetPasswordActivity : AppCompatActivity() {
             }
     }
 
-    private fun sendResetPasswordEmail(email: String) {
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
+    private fun updateEmail(newEmail: String) {
+        val user = auth.currentUser
+        user?.updateEmail(newEmail)
+            ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Reset password email sent successfully.", Toast.LENGTH_SHORT).show()
-                    finish()
+                    db.collection("users").document(user.uid)
+                        .update("email", newEmail)
+                        .addOnCompleteListener { firestoreTask ->
+                            if (firestoreTask.isSuccessful) {
+                                Toast.makeText(this, "Email berhasil diubah", Toast.LENGTH_SHORT).show()
+                                finish()
+                            } else {
+                                generalErrorTextView.visibility = View.VISIBLE
+                                generalErrorTextView.text = "*Failed to update email in Firestore"
+                            }
+                        }
                 } else {
-                    Log.w(TAG, "sendPasswordResetEmail:failure", task.exception)
+                    Log.w(TAG, "updateEmail:failure", task.exception)
                     generalErrorTextView.visibility = View.VISIBLE
-                    generalErrorTextView.text = "*Failed to send reset email"
+                    generalErrorTextView.text = "*Failed to update email"
                 }
             }
     }
 
     companion object {
-        private const val TAG = "ResetPasswordActivity"
+        private const val TAG = "ChangeEmailActivity"
     }
 }

@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reset Password"
+        android:text="Change Email"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -28,7 +28,7 @@
         android:id="@+id/instructionTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Please enter your registered email."
+        android:text="Please enter your new email."
         android:textSize="14sp"
         android:textStyle="normal"
         android:textColor="@color/black"
@@ -36,10 +36,10 @@
         android:layout_marginBottom="20dp"/>
 
     <EditText
-        android:id="@+id/emailEditText"
+        android:id="@+id/newEmailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="Email Baru"
         android:inputType="textEmailAddress"
         android:layout_marginBottom="10dp"
         android:padding="12dp"
@@ -50,16 +50,13 @@
         android:id="@+id/generalErrorTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/redlink"
-        android:textSize="14sp"
+        android:textColor="@android:color/holo_red_light"
         android:visibility="gone"
         android:gravity="center"/>
 
     <Button
-        android:id="@+id/resetButton"
-        android:layout_width="175dp"
-        android:layout_height="50dp"
-        android:text="Send"
-        android:backgroundTint="@color/orange" />
-
+        android:id="@+id/changeEmailButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Change" />
 </LinearLayout>

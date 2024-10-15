@@ -108,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
 
                     if (user?.isEmailVerified == true) {
                         Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, MainActivity::class.java))
+                        startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     } else {
                         user?.let { sendEmailVerification(it) }
