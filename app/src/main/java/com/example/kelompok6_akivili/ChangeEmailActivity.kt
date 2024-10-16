@@ -1,5 +1,6 @@
 package com.example.kelompok6_akivili
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,12 +9,15 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ChangeEmailActivity : AppCompatActivity() {
 
     private lateinit var newEmailEditText: EditText
+    private lateinit var passwordEditText: EditText
     private lateinit var changeEmailButton: Button
     private lateinit var generalErrorTextView: TextView
     private lateinit var auth: FirebaseAuth
@@ -23,73 +27,114 @@ class ChangeEmailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_email)
 
+        // Inisialisasi Firebase Auth dan Firestore
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
+
+        // Inisialisasi komponen UI
         newEmailEditText = findViewById(R.id.newEmailEditText)
+        passwordEditText = findViewById(R.id.passwordEditText)
         changeEmailButton = findViewById(R.id.changeEmailButton)
         generalErrorTextView = findViewById(R.id.generalErrorTextView)
 
+        // Aksi saat tombol change email ditekan
         changeEmailButton.setOnClickListener {
             val newEmail = newEmailEditText.text.toString().trim()
+            val currentPassword = passwordEditText.text.toString().trim()
 
             generalErrorTextView.visibility = View.GONE
 
+            // Validasi input email
             if (!isEmailValid(newEmail)) {
                 generalErrorTextView.visibility = View.VISIBLE
-                generalErrorTextView.text = "*Invalid email"
+                generalErrorTextView.text = "*Email tidak valid"
                 return@setOnClickListener
             }
 
-            checkEmailExists(newEmail)
+            // Validasi input password
+            if (currentPassword.isEmpty()) {
+                generalErrorTextView.visibility = View.VISIBLE
+                generalErrorTextView.text = "*Masukkan kata sandi saat ini"
+                return@setOnClickListener
+            }
+
+            // Cek apakah email baru sudah terdaftar
+            checkEmailExists(newEmail, currentPassword)
         }
     }
 
+    // Fungsi untuk validasi email
     private fun isEmailValid(email: String): Boolean {
         return email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    private fun checkEmailExists(email: String) {
+    // Fungsi untuk mengecek apakah email baru sudah ada di database Firestore
+    private fun checkEmailExists(newEmail: String, currentPassword: String) {
         db.collection("users")
-            .whereEqualTo("email", email)
+            .whereEqualTo("email", newEmail)
             .get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     if (task.result != null && !task.result.isEmpty) {
                         generalErrorTextView.visibility = View.VISIBLE
-                        generalErrorTextView.text = "*Email already exists"
+                        generalErrorTextView.text = "*Email sudah terdaftar"
                     } else {
-                        updateEmail(email)
+                        // Jika email tidak ada, lanjut ke proses re-authentication dan update email
+                        reauthenticateAndChangeEmail(newEmail, currentPassword)
                     }
                 } else {
                     Log.w(TAG, "checkEmailExists:failure", task.exception)
                     generalErrorTextView.visibility = View.VISIBLE
-                    generalErrorTextView.text = "*Error checking email"
+                    generalErrorTextView.text = "*Error saat memeriksa email"
                 }
             }
     }
 
-    private fun updateEmail(newEmail: String) {
+    // Fungsi untuk re-authenticate pengguna dan mengubah email
+    private fun reauthenticateAndChangeEmail(newEmail: String, currentPassword: String) {
         val user = auth.currentUser
-        user?.updateEmail(newEmail)
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    db.collection("users").document(user.uid)
-                        .update("email", newEmail)
-                        .addOnCompleteListener { firestoreTask ->
-                            if (firestoreTask.isSuccessful) {
-                                Toast.makeText(this, "Email berhasil diubah", Toast.LENGTH_SHORT).show()
-                                finish()
+        if (user != null) {
+            val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+
+            user.reauthenticate(credential)
+                .addOnCompleteListener { reauthTask ->
+                    if (reauthTask.isSuccessful) {
+                        // Jika re-authentication berhasil, update email pengguna
+                        user.updateEmail(newEmail)
+                            .addOnCompleteListener { updateTask ->
+                                if (updateTask.isSuccessful) {
+                                    // Update email di Firestore setelah sukses update di Firebase Auth
+                                    db.collection("users").document(user.uid)
+                                        .update("email", newEmail)
+                                        .addOnCompleteListener { firestoreTask ->
+                                            if (firestoreTask.isSuccessful) {
+                                                Toast.makeText(this, "Email berhasil diubah", Toast.LENGTH_SHORT).show()
+                                                finish()
+                                            } else {
+                                                generalErrorTextView.visibility = View.VISIBLE
+                                                generalErrorTextView.text = "*Gagal memperbarui email di Firestore"
+                                            }
+                                        }
+                                } else {
+                                    Log.w(TAG, "updateEmail:failure", updateTask.exception)
+                                    generalErrorTextView.visibility = View.VISIBLE
+                                    generalErrorTextView.text = "*Gagal memperbarui email"
+                                }
+                            }
+                    } else {
+                        // Menangani error jika re-authentication gagal
+                        reauthTask.exception?.let {
+                            if (it is FirebaseAuthInvalidCredentialsException) {
+                                generalErrorTextView.visibility = View.VISIBLE
+                                generalErrorTextView.text = "*Kata sandi salah"
                             } else {
                                 generalErrorTextView.visibility = View.VISIBLE
-                                generalErrorTextView.text = "*Failed to update email in Firestore"
+                                generalErrorTextView.text = "*Gagal re-autentikasi: ${it.message}"
                             }
                         }
-                } else {
-                    Log.w(TAG, "updateEmail:failure", task.exception)
-                    generalErrorTextView.visibility = View.VISIBLE
-                    generalErrorTextView.text = "*Failed to update email"
+                    }
                 }
-            }
+        }
     }
 
     companion object {

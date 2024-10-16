@@ -39,12 +39,24 @@
         android:id="@+id/newEmailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email Baru"
+        android:hint="New Email"
         android:inputType="textEmailAddress"
         android:layout_marginBottom="10dp"
         android:padding="12dp"
         android:background="@drawable/edittext_background"
         android:textColor="@color/black" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Current Password"
+        android:inputType="textPassword"
+        android:layout_marginBottom="10dp"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:textColor="@color/black"/>
+
 
     <TextView
         android:id="@+id/generalErrorTextView"
