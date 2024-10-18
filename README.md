@@ -2,8 +2,8 @@ Akivili merupakan Aplikasi penyedia layanan Topup Games bisa berupa "Currency" a
 
 Anggota Kelompok:
 1. Vincent Bryan - 00000076794
-2. Nathanael Felix - 
-3. Yoka - 
+2. Nathanael Felix - 00000069434
+3. Yoka Kristiandi Jaya - 00000073877
 
 Fitur yang tersedia:
 1. Login
@@ -12,11 +12,12 @@ Fitur yang tersedia:
 4. Change Email
 5. Add to Cart
 6. Payment
-7. Buy History
-8. Profile
+7. Transaction History
+8. Profile Picture
 9. Customer Service
 10. Logout
 
 Permission yang digunakan:
 1. Location
-2. Profile
+2. Camera
+3. Media (Storage)
