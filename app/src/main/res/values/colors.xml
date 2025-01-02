@@ -7,4 +7,6 @@
     <color name="abufont">#8F8686</color>
     <color name="cyanlink">#00CCDD</color>
     <color name="redlink">#FF0000</color>
+    <color name="green">#4CAF50</color>
+    <color name="red">#D32F2F</color>
 </resources>

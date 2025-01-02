@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -60,6 +61,11 @@ class ChangeEmailActivity : AppCompatActivity() {
 
             // Cek apakah email baru sudah terdaftar
             checkEmailExists(newEmail, currentPassword)
+        }
+
+        val backButton: ImageButton = findViewById(R.id.backButton)
+        backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 

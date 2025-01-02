@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -71,6 +72,11 @@ class RegisterActivity : AppCompatActivity() {
             override fun onClick(widget: View) {
                 startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
             }
+        }
+
+        val backButton: ImageView = findViewById(R.id.backButton)
+        backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
 
         val loginColor = ContextCompat.getColor(this, R.color.redlink)

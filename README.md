@@ -18,6 +18,5 @@ Fitur yang tersedia:
 10. Logout
 
 Permission yang digunakan:
-1. Location
-2. Camera
-3. Media (Storage)
+1. Camera
+2. Media (Storage)

@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import android.widget.Toast
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -98,6 +99,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser(email: String, password: String) {
+        // Lakukan login menggunakan Firebase Authentication
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 generalErrorTextView.visibility = View.GONE
@@ -106,24 +108,46 @@ class LoginActivity : AppCompatActivity() {
                     Log.d(TAG, "signInWithEmail:success")
                     val user = auth.currentUser
 
-                    if (user?.isEmailVerified == true) {
-                        Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, HomeActivity::class.java))
-                        finish()
-                    } else {
-                        user?.let { sendEmailVerification(it) }
-                        generalErrorTextView.visibility = View.VISIBLE
-                        generalErrorTextView.text = "*Email not verified. Please verify your email."
+                    // Langsung periksa apakah pengguna adalah admin
+                    if (user != null) {
+                        checkIfAdmin(user.email ?: "")
                     }
                 } else {
-                    Log.w(TAG, "signInWithEmail:failure", task.exception)
-                    Log.e(TAG, "Error: ${task.exception?.message}")
-
+                    // Login gagal, tampilkan pesan kesalahan
+                    val exception = task.exception
+                    Log.e(TAG, "Login failed: ${exception?.message}")
                     generalErrorTextView.visibility = View.VISIBLE
                     generalErrorTextView.text = "*Login failed. Check your email or password."
                 }
             }
     }
+
+    private fun checkIfAdmin(email: String) {
+        val firestore = FirebaseFirestore.getInstance()
+
+        // Mengakses data admin dari Firestore
+        firestore.collection("users")
+            .document("Admin")  // Pastikan Anda mengakses dokumen admin yang benar
+            .get()
+            .addOnSuccessListener { document ->
+                val adminEmail = document.getString("email")
+
+                if (adminEmail == email) {
+                    // Jika email pengguna cocok dengan admin, arahkan ke AdminActivity
+                    startActivity(Intent(this, AdminActivity::class.java))
+                    finish()
+                } else {
+                    // Jika bukan admin, arahkan ke HomeActivity
+                    startActivity(Intent(this, HomeActivity::class.java))
+                    finish()
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error fetching admin data: $exception")
+                Toast.makeText(this, "Failed to verify admin status.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
 
     private fun sendEmailVerification(user: FirebaseUser) {
         user.sendEmailVerification()

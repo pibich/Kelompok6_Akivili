@@ -1,0 +1,9 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap
+            android:src="@drawable/ic_qris"
+            android:gravity="center"
+            android:width="12dp"
+            android:height="12dp" />
+    </item>
+</layer-list>

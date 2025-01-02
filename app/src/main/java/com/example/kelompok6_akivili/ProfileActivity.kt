@@ -1,8 +1,7 @@
 package com.example.kelompok6_akivili
 
-import android.Manifest
+import PurchaseHistoryManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
@@ -19,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import android.widget.Toast
+import android.net.Uri
+import android.widget.ImageButton
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -29,10 +30,11 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var logoutButton: Button
     private lateinit var purchaseHistoryRecyclerView: RecyclerView
     private lateinit var purchaseHistoryAdapter: PurchaseHistoryAdapter
-    private lateinit var purchaseHistoryList: List<PurchaseHistory>
+    private lateinit var purchaseHistoryList: MutableList<PurchaseHistory>
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
+    private lateinit var purchaseHistoryManager: PurchaseHistoryManager
 
     private lateinit var pickImageLauncher: ActivityResultLauncher<String>
 
@@ -51,10 +53,10 @@ class ProfileActivity : AppCompatActivity() {
             uri?.let { uploadProfilePicture(it) }
         }
 
-        purchaseHistoryList = getPurchaseHistory()
-        purchaseHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
-        purchaseHistoryAdapter = PurchaseHistoryAdapter(this, purchaseHistoryList)
-        purchaseHistoryRecyclerView.adapter = purchaseHistoryAdapter
+        purchaseHistoryManager = PurchaseHistoryManager(this)
+
+        // Load histori pembelian dari SharedPreferences
+        loadPurchaseHistory()
 
         loadUserProfile()
 
@@ -79,10 +81,15 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
 
+        val viewMoreButton: Button = findViewById(R.id.viewMoreButton)
+        viewMoreButton.setOnClickListener {
+            startActivity(Intent(this, PurchaseHistoryActivity::class.java))
+        }
+
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.selectedItemId = R.id.nav_profile
 
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
                     startActivity(Intent(this, HomeActivity::class.java))
@@ -96,8 +103,27 @@ class ProfileActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        val backButton: ImageButton = findViewById(R.id.backButton)
+        backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
+    // Load histori pembelian dari SharedPreferences
+    private fun loadPurchaseHistory() {
+        val allPurchases = purchaseHistoryManager.getAllPurchases()
+
+        // Tampilkan hanya 2 transaksi terbaru
+        purchaseHistoryList = allPurchases.take(2).toMutableList()
+
+        // Setup RecyclerView
+        purchaseHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
+        purchaseHistoryAdapter = PurchaseHistoryAdapter(this, purchaseHistoryList)
+        purchaseHistoryRecyclerView.adapter = purchaseHistoryAdapter
+    }
+
+    // Load profil pengguna dari Firebase Firestore
     private fun loadUserProfile() {
         val userId = auth.currentUser?.uid
         userId?.let {
@@ -166,9 +192,5 @@ class ProfileActivity : AppCompatActivity() {
                 .update("profilePicture", null)
             profilePicture.setImageResource(R.drawable.baseline_account_circle_24)
         }
-    }
-
-    private fun getPurchaseHistory(): List<PurchaseHistory> {
-        return listOf()
     }
 }

@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.kelompok6_akivili"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.kelompok6_akivili"
@@ -45,16 +45,25 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.firebase:firebase-analytics:22.1.2")
-    implementation("com.google.firebase:firebase-firestore:25.1.0")
-    implementation("com.google.firebase:firebase-storage:21.0.1")
-    implementation("com.google.firebase:firebase-auth:23.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("com.github.bumptech.glide:glide:4.14.2")
+    implementation(libs.firebase.database)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.glide)
+    implementation(libs.core)
+    implementation(libs.zxing.android.embedded)
+    implementation(libs.gson)
+    implementation(libs.androidx.cardview)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.glide.v4151)
+    annotationProcessor(libs.compiler)
     kapt("com.github.bumptech.glide:compiler:4.12.0")
+    implementation(libs.firebase.appcheck)
+    implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.play.services.location)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
